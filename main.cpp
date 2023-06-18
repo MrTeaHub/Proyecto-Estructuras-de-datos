@@ -1,3 +1,4 @@
+
 #include "Grafo.cpp"
 #include <vector>
 #include <fstream>
@@ -56,7 +57,7 @@ void almacenarArchivo(string Archivo, Grafo<Almacen> *grafo) {
         else {
             vector<string> productos;
             stringstream stream(linea);
-            getline(stream, nombreAlmacen,delim);
+            getline(stream, nombreAlmacen,':');
             for (int i = 0; i < 10; i++) {
                 getline(stream,producto,delim);
                 productos.push_back(producto);
