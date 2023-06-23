@@ -72,7 +72,12 @@ void almacenarArchivo(string Archivo, Grafo<Almacen> *grafo) {
     archivo.close();
 }
 
-void dijkstra(Vertice<Almacen>* begin) {
+void dijkstra(Vertice<Almacen>* begin, Grafo<Almacen>* grafo) {
+    for (int i = 0; i < grafo->count; i++) {
+        grafo->listaVertices[i]->color = 'w';
+        grafo->listaVertices[i]->distance = INT_MAX;
+    }
+
     begin->distance = 0;
     begin->predecesor = 0;
     queue<Vertice<Almacen>*> colaVertice;
@@ -84,6 +89,7 @@ void dijkstra(Vertice<Almacen>* begin) {
 
         for (Arista<Almacen>* vecino : curVertice->connectedTo) {
             if(vecino->to->color == 'w'){
+                vecino->to->color = 'g';
                 int newDistance = curVertice->distance + vecino->weight;
                 if (newDistance < vecino->to->distance) {
                     vecino->to->distance = newDistance;
@@ -109,6 +115,16 @@ void traversal(Vertice<Almacen>* vertice){
         stack.pop();
     }
     cout << ruta << "FIN" << endl << endl;
+}
+
+void dijkstra(vector<vector<string>> posicionVertices, Grafo<Almacen>* grafo){
+    Vertice<Almacen>* v,*v1;
+    for (int i = 0; i < posicionVertices.size()-1; i++) {
+        v = grafo->getVertice(grafo->listaVertices[stoi(posicionVertices[i][0])-1]->data);
+        v1 = grafo->getVertice(grafo->listaVertices[stoi(posicionVertices[i+1][0])-1]->data);
+        dijkstra(v,grafo);
+        traversal(v1);
+    }
 }
 
 void menu(Grafo<Almacen> *grafo){
@@ -149,10 +165,7 @@ void menu(Grafo<Almacen> *grafo){
             if(posicionInicioFin.empty()) cout << endl << "No hay productos en el carro de compras" << endl << endl;
             else {
                 cout << endl << "Distancia mas corta" << endl;
-                Vertice<Almacen>* v = grafo->getVertice(grafo->listaVertices[stoi(posicionInicioFin[0][0])-1]->data);
-                Vertice<Almacen>* v1 = grafo->getVertice(grafo->listaVertices[stoi(posicionInicioFin[1][0])-1]->data);
-                dijkstra(v);
-                traversal(v1);
+                dijkstra(posicionInicioFin,grafo);
             }
 
         }
