@@ -7,7 +7,7 @@ Vertice<T>::Vertice(const T &value) {
     outDegree = 0;
     connectedTo = {};
     predecesor = 0;
-    distance = 0;
+    distance = INT_MAX;
     color = 'w';
 }
 
@@ -74,5 +74,13 @@ void Grafo<T>::printListaVertices() {
     for(int i = 0; i < listaVertices.size(); i++ ){
         cout << listaVertices[i]->data.getNombre() <<endl;
     }
-
 }
+
+template<typename T>
+bool Grafo<T>::buscarRelacionVertices(Vertice<T>* v1, Vertice<T>* v2) {
+    for (int i = 0; i < v1->connectedTo.size(); i++) {
+        if(v1->connectedTo[i]->to->data.getNombre() == v2->data.getNombre()) return true;
+    }
+    return false;
+}
+

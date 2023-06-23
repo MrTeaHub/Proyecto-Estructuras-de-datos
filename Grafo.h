@@ -61,6 +61,8 @@ public:
     Vertice<T>* getVertice(const T& value);
     void addAristaNoDireccional(const T& from, const T& to, int weight = 0);
     void printListaVertices();
+
+    bool buscarRelacionVertices(Vertice<T>* v1, Vertice<T>* v2);
 };
 
 
