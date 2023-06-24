@@ -72,33 +72,46 @@ void almacenarArchivo(string Archivo, Grafo<Almacen> *grafo) {
     archivo.close();
 }
 
-void dijkstra(Vertice<Almacen>* begin, Grafo<Almacen>* grafo) {
-    for (int i = 0; i < grafo->count; i++) {
+void dijkstra(Vertice<Almacen> *begin, Grafo<Almacen> *grafo)
+{
+    for (int i = 0; i < grafo->count; i++)
+    {
         grafo->listaVertices[i]->color = 'w';
         grafo->listaVertices[i]->distance = INT_MAX;
     }
-
     begin->distance = 0;
     begin->predecesor = 0;
-    queue<Vertice<Almacen>*> colaVertice;
-    colaVertice.push(begin);
 
-    while (colaVertice.size() > 0) {
-        Vertice<Almacen>* curVertice = colaVertice.front();
-        colaVertice.pop();
+    for (int i = 0; i < grafo->count; i++)
+    {
+        Vertice<Almacen> *curVertice = 0;
+        int minDistance = INT_MAX;
 
-        for (Arista<Almacen>* vecino : curVertice->connectedTo) {
-            if(vecino->to->color == 'w'){
-                vecino->to->color = 'g';
-                int newDistance = curVertice->distance + vecino->weight;
-                if (newDistance < vecino->to->distance) {
-                    vecino->to->distance = newDistance;
+        for (int j = 0; j < grafo->count; j++)
+        {
+            if (grafo->listaVertices[j]->color == 'w' && grafo->listaVertices[j]->distance < minDistance)
+            {
+                curVertice = grafo->listaVertices[j];
+                minDistance = curVertice->distance;
+            }
+        }
+
+        if (curVertice == 0)
+            break;
+        curVertice->color = 'b';
+
+        for (Arista<Almacen> *vecino : curVertice->connectedTo)
+        {
+            if (vecino->to->color == 'w')
+            {
+                int nuevaDistancia = curVertice->distance + vecino->weight;
+                if (nuevaDistancia < vecino->to->distance)
+                {
+                    vecino->to->distance = nuevaDistancia;
                     vecino->to->predecesor = curVertice;
-                    colaVertice.push(vecino->to);
                 }
             }
         }
-        curVertice->color = 'b';
     }
 }
 
