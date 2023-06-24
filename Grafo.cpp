@@ -69,18 +69,9 @@ Vertice<T> *Grafo<T>::getVertice(const T &value) {
     return NULL;
 }
 
-template<class T>
-void Grafo<T>::printListaVertices() {
-    for(int i = 0; i < listaVertices.size(); i++ ){
-        cout << listaVertices[i]->data.getNombre() <<endl;
-    }
+template <class T>
+int Grafo<T>::obtenerPosicionVertice(Vertice<T> *vertice)
+{
+    for (int i = 0; i < listaVertices.size(); i++) if (listaVertices[i]->data.getNombre() == vertice->data.getNombre()) return i;
+    
 }
-
-template<typename T>
-bool Grafo<T>::buscarRelacionVertices(Vertice<T>* v1, Vertice<T>* v2) {
-    for (int i = 0; i < v1->connectedTo.size(); i++) {
-        if(v1->connectedTo[i]->to->data.getNombre() == v2->data.getNombre()) return true;
-    }
-    return false;
-}
-

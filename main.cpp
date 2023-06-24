@@ -106,17 +106,21 @@ void dijkstra(Vertice<Almacen>* begin, Grafo<Almacen>* grafo) {
     }
 }
 
-void traversal(Vertice<Almacen>* vertice, vector<string> &rutaMasCorta){
+void traversal(Vertice<Almacen>* vertice, vector<string> &rutaMasCorta, vector<int> &posicionVertices, Grafo<Almacen>* grafo){
     stack<string> pila;
     stack<int> pila2;
     while(vertice->predecesor){
         pila.push(vertice->data.getNombre());
+        pila2.push(grafo->obtenerPosicionVertice(vertice));
         vertice = vertice->predecesor;
     }
     pila.push(vertice->data.getNombre());
+    pila2.push(grafo->obtenerPosicionVertice(vertice));
     while(pila.size() > 0){
         rutaMasCorta.push_back(pila.top());
+        posicionVertices.push_back(pila2.top());
         pila.pop();
+        pila2.pop();
     }
 }
 
@@ -129,7 +133,7 @@ void dijkstra(vector<vector<string>> posicionVertices, Grafo<Almacen>* grafo){
         v = grafo->getVertice(grafo->listaVertices[stoi(posicionVertices[i][0])-1]->data);
         v1 = grafo->getVertice(grafo->listaVertices[stoi(posicionVertices[i+1][0])-1]->data);
         dijkstra(v,grafo);
-        traversal(v1,rutaMasCorta);
+        traversal(v1,rutaMasCorta, posicionVerticesRutaCorta,grafo);
     }
 
     for (int i = 0; i < rutaMasCorta.size(); i++) if(rutaMasCorta[i] == rutaMasCorta[i+1]) rutaMasCorta.erase(rutaMasCorta.begin()+i, rutaMasCorta.begin()+i+1);
