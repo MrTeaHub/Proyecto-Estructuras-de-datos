@@ -5,42 +5,50 @@
 #include <queue>
 #include <stack>
 
-
-class Almacen {
+class Almacen
+{
 private:
     string nombre;
     vector<string> productos;
+
 public:
-    Almacen():nombre(""),productos({}){}
+    Almacen() : nombre(""), productos({}) {}
     Almacen(const string &nombre, const vector<string> &productos) : nombre(nombre), productos(productos) {}
 
-    const string getNombre() const {
+    const string getNombre() const
+    {
         return nombre;
     }
 
-    void setNombre(const string &nombre) {
+    void setNombre(const string &nombre)
+    {
         Almacen::nombre = nombre;
     }
 
-    const vector<string> &getProductos() const {
+    const vector<string> &getProductos() const
+    {
         return productos;
     }
 
-    void setProductos(const vector<string> &productos) {
+    void setProductos(const vector<string> &productos)
+    {
         Almacen::productos = productos;
     }
 };
 
-void almacenarArchivo(string Archivo, Grafo<Almacen> *grafo) {
+void almacenarArchivo(string Archivo, Grafo<Almacen> *grafo)
+{
     ifstream archivo(Archivo);
-    string linea, nombreAlmacen, producto, from, to,weight;
+    string linea, nombreAlmacen, producto, from, to, weight;
     char delim = ',';
     int count = 0;
     vector<Almacen> vertices;
     getline(archivo, linea);
-    while (getline(archivo, linea)) {
+    while (getline(archivo, linea))
+    {
         Almacen almacen;
-        if(count > 20){
+        if (count > 20)
+        {
             Almacen almacen2;
             stringstream stream(linea);
             getline(stream, from, delim);
@@ -48,19 +56,23 @@ void almacenarArchivo(string Archivo, Grafo<Almacen> *grafo) {
             getline(stream, weight);
             almacen.setNombre(from);
             almacen2.setNombre(to);
-            grafo->addAristaNoDireccional(almacen,almacen2,stoi(weight));
+            grafo->addAristaNoDireccional(almacen, almacen2, stoi(weight));
         }
-        else if(count == 20){
-            for (int i = 0; i < vertices.size(); i++) {
+        else if (count == 20)
+        {
+            for (int i = 0; i < vertices.size(); i++)
+            {
                 grafo->addVertice(vertices[i]);
             }
         }
-        else {
+        else
+        {
             vector<string> productos;
             stringstream stream(linea);
-            getline(stream, nombreAlmacen,':');
-            for (int i = 0; i < 10; i++) {
-                getline(stream,producto,delim);
+            getline(stream, nombreAlmacen, ':');
+            for (int i = 0; i < 10; i++)
+            {
+                getline(stream, producto, delim);
                 productos.push_back(producto);
             }
             almacen.setNombre(nombreAlmacen);
@@ -72,32 +84,41 @@ void almacenarArchivo(string Archivo, Grafo<Almacen> *grafo) {
     archivo.close();
 }
 
-void dijkstra(Vertice<Almacen>* begin, Grafo<Almacen>* grafo) {
-    for (int i = 0; i < grafo->count; i++) {
+void dijkstra(Vertice<Almacen> *begin, Grafo<Almacen> *grafo)
+{
+    for (int i = 0; i < grafo->count; i++)
+    {
         grafo->listaVertices[i]->color = 'w';
         grafo->listaVertices[i]->distance = INT_MAX;
     }
     begin->distance = 0;
     begin->predecesor = 0;
 
-    for (int i = 0; i < grafo->count; i++) {
-        Vertice<Almacen>* curVertice = 0;
+    for (int i = 0; i < grafo->count; i++)
+    {
+        Vertice<Almacen> *curVertice = 0;
         int minDistance = INT_MAX;
 
-        for (int j = 0; j < grafo->count; j++) {
-            if (grafo->listaVertices[j]->color == 'w' && grafo->listaVertices[j]->distance < minDistance) {
+        for (int j = 0; j < grafo->count; j++)
+        {
+            if (grafo->listaVertices[j]->color == 'w' && grafo->listaVertices[j]->distance < minDistance)
+            {
                 curVertice = grafo->listaVertices[j];
                 minDistance = curVertice->distance;
             }
         }
 
-        if (curVertice == 0) break;
+        if (curVertice == 0)
+            break;
         curVertice->color = 'b';
 
-        for (Arista<Almacen>* vecino : curVertice->connectedTo) {
-            if (vecino->to->color == 'w') {
+        for (Arista<Almacen> *vecino : curVertice->connectedTo)
+        {
+            if (vecino->to->color == 'w')
+            {
                 int nuevaDistancia = curVertice->distance + vecino->weight;
-                if (nuevaDistancia < vecino->to->distance) {
+                if (nuevaDistancia < vecino->to->distance)
+                {
                     vecino->to->distance = nuevaDistancia;
                     vecino->to->predecesor = curVertice;
                 }
@@ -106,17 +127,21 @@ void dijkstra(Vertice<Almacen>* begin, Grafo<Almacen>* grafo) {
     }
 }
 
-void traversal(Vertice<Almacen>* vertice, vector<string> &rutaMasCorta, vector<int> &posicionVertices, Grafo<Almacen>* grafo){
+void traversal(Vertice<Almacen> *vertice, vector<string> &rutaMasCorta, vector<int> &posicionVertices, Grafo<Almacen> *grafo, int &distancia)
+{
     stack<string> pila;
     stack<int> pila2;
-    while(vertice->predecesor){
+    while (vertice->predecesor)
+    {
         pila.push(vertice->data.getNombre());
         pila2.push(grafo->obtenerPosicionVertice(vertice));
+        distancia += vertice->getWeight(vertice->predecesor->data);
         vertice = vertice->predecesor;
     }
     pila.push(vertice->data.getNombre());
     pila2.push(grafo->obtenerPosicionVertice(vertice));
-    while(pila.size() > 0){
+    while (pila.size() > 0)
+    {
         rutaMasCorta.push_back(pila.top());
         posicionVertices.push_back(pila2.top());
         pila.pop();
@@ -124,34 +149,45 @@ void traversal(Vertice<Almacen>* vertice, vector<string> &rutaMasCorta, vector<i
     }
 }
 
-void dijkstra(vector<vector<string>> posicionVertices, Grafo<Almacen>* grafo){
-    Vertice<Almacen>* v,*v1;
+void dijkstra(vector<vector<string>> posicionVertices, Grafo<Almacen> *grafo)
+{
+    Vertice<Almacen> *v, *v1;
     vector<string> rutaMasCorta;
     vector<int> posicionVerticesRutaCorta;
     string ruta = "INICIO->";
-    for (int i = 0; i < posicionVertices.size()-1; i++) {
-        v = grafo->getVertice(grafo->listaVertices[stoi(posicionVertices[i][0])-1]->data);
-        v1 = grafo->getVertice(grafo->listaVertices[stoi(posicionVertices[i+1][0])-1]->data);
-        dijkstra(v,grafo);
-        traversal(v1,rutaMasCorta, posicionVerticesRutaCorta,grafo);
+    int distanciaRutaMasCorta = 0;
+    for (int i = 0; i < posicionVertices.size() - 1; i++)
+    {
+        v = grafo->getVertice(grafo->listaVertices[stoi(posicionVertices[i][0]) - 1]->data);
+        v1 = grafo->getVertice(grafo->listaVertices[stoi(posicionVertices[i + 1][0]) - 1]->data);
+        dijkstra(v, grafo);
+        traversal(v1, rutaMasCorta, posicionVerticesRutaCorta, grafo, distanciaRutaMasCorta);
     }
 
-    for (int i = 0; i < rutaMasCorta.size(); i++) if(rutaMasCorta[i] == rutaMasCorta[i+1]) rutaMasCorta.erase(rutaMasCorta.begin()+i, rutaMasCorta.begin()+i+1);
+    for (int i = 0; i < rutaMasCorta.size(); i++)
+        if (rutaMasCorta[i] == rutaMasCorta[i + 1])
+            rutaMasCorta.erase(rutaMasCorta.begin() + i, rutaMasCorta.begin() + i + 1);
 
-    for (int i = 0; i < rutaMasCorta.size(); i++) ruta += rutaMasCorta[i]+"->";
+    for (int i = 0; i < rutaMasCorta.size(); i++)
+        ruta += rutaMasCorta[i] + "->";
     ruta += "FIN";
-    cout << ruta << endl << endl;
+    cout << ruta << endl;
+    cout << "Distancia: " << distanciaRutaMasCorta << " km" << endl
+         << endl;
 }
 
-void menu(Grafo<Almacen> *grafo){
-    //contiene la posicion del almacen en el grafo y los productos que se van a comprar
+void menu(Grafo<Almacen> *grafo)
+{
+    // contiene la posicion del almacen en el grafo y los productos que se van a comprar
     vector<vector<string>> posicionInicioFin;
-    while(true){
+    while (true)
+    {
         bool flag = true;
         int opc;
         cout << "Almacenes: " << endl;
         cout << "Digite el numero del almacen para ver sus productos" << endl;
-        for (int i = 0; i < grafo->listaVertices.size(); i++) {
+        for (int i = 0; i < grafo->listaVertices.size(); i++)
+        {
             Vertice<Almacen> *vertice = grafo->listaVertices[i];
             cout << i + 1 << ") " << vertice->data.getNombre() << endl;
         }
@@ -159,17 +195,25 @@ void menu(Grafo<Almacen> *grafo){
         cout << "22) Calcular distancia mas corta" << endl;
         cout << "23) Borrar carro de compras" << endl;
         cout << "24) Salir" << endl;
-        cin>> opc;
-        if(opc == 24) {
+        cin >> opc;
+        if (opc == 24)
+        {
             cout << "Saliendo del programa...";
             break;
         }
-        else if(opc == 21) {
-            if(posicionInicioFin.empty()) cout << endl << "No hay productos en el carro de compras" << endl << endl;
-            else {
+        else if (opc == 21)
+        {
+            if (posicionInicioFin.empty())
+                cout << endl
+                     << "No hay productos en el carro de compras" << endl
+                     << endl;
+            else
+            {
                 cout << endl;
-                for (int i = 0; i < posicionInicioFin.size(); i++) {
-                    for (int j = 1; j < posicionInicioFin[i].size(); j++) {
+                for (int i = 0; i < posicionInicioFin.size(); i++)
+                {
+                    for (int j = 1; j < posicionInicioFin[i].size(); j++)
+                    {
                         cout << posicionInicioFin[i][j] << " ";
                     }
                     cout << endl;
@@ -177,58 +221,76 @@ void menu(Grafo<Almacen> *grafo){
                 cout << endl;
             }
         }
-        else if(opc == 22){
-            if(posicionInicioFin.empty()) cout << endl << "No hay productos en el carro de compras" << endl << endl;
-            else {
-                cout << endl << "Distancia mas corta" << endl;
-                dijkstra(posicionInicioFin,grafo);
+        else if (opc == 22)
+        {
+            if (posicionInicioFin.empty())
+                cout << endl
+                     << "No hay productos en el carro de compras" << endl
+                     << endl;
+            else
+            {
+                cout << endl
+                     << "Distancia mas corta" << endl;
+                dijkstra(posicionInicioFin, grafo);
             }
-
         }
-        else if(opc == 23) {
+        else if (opc == 23)
+        {
             posicionInicioFin.clear();
-            cout << endl << "Se ha borrado el carro de compras" << endl << endl;
+            cout << endl
+                 << "Se ha borrado el carro de compras" << endl
+                 << endl;
         }
-        else {
-            Vertice<Almacen> *vertice = grafo->listaVertices[opc-1];
-            if (vertice->connectedTo.size() > 0) {
+        else
+        {
+            Vertice<Almacen> *vertice = grafo->listaVertices[opc - 1];
+            if (vertice->connectedTo.size() > 0)
+            {
                 int posicion = opc;
-                while(true) {
+                while (true)
+                {
                     vector<string> posicionNombre;
                     posicionNombre.push_back(to_string(posicion));
-                    cout << endl << vertice->data.getNombre() << endl;
+                    cout << endl
+                         << vertice->data.getNombre() << endl;
                     cout << "Digite el numero del producto que quiera comprar" << endl;
-                    for (int j = 0; j < vertice->data.getProductos().size(); j++) {
-                        cout << j+1 << ") " << vertice->data.getProductos()[j] << endl;
+                    for (int j = 0; j < vertice->data.getProductos().size(); j++)
+                    {
+                        cout << j + 1 << ") " << vertice->data.getProductos()[j] << endl;
                     }
                     cout << "11) Atras" << endl;
                     cin >> opc;
-                    if(opc == 11) break;
-                    for (int i = 0; i < posicionInicioFin.size(); i++) {
-                        if(posicionInicioFin[i][0] == to_string(posicion)) {
-                            posicionInicioFin[i].push_back(vertice->data.getProductos()[opc-1]);
+                    if (opc == 11)
+                        break;
+                    for (int i = 0; i < posicionInicioFin.size(); i++)
+                    {
+                        if (posicionInicioFin[i][0] == to_string(posicion))
+                        {
+                            posicionInicioFin[i].push_back(vertice->data.getProductos()[opc - 1]);
                             flag = false;
                         }
                     }
-                    if(flag){
-                        posicionNombre.push_back(vertice->data.getProductos()[opc-1]);
+                    if (flag)
+                    {
+                        posicionNombre.push_back(vertice->data.getProductos()[opc - 1]);
                         posicionInicioFin.push_back(posicionNombre);
                     }
                 }
                 cout << endl;
-            } else {
+            }
+            else
+            {
                 cout << "No tiene productos.";
             }
             cout << endl;
         }
-
     }
 }
 
-
-int main () {
+int main()
+{
     Grafo<Almacen> bot;
-    almacenarArchivo("listaInicial.txt",&bot);
+    almacenarArchivo("listaInicial.txt", &bot);
     menu(&bot);
     return 0;
 }

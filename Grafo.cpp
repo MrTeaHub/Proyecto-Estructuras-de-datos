@@ -26,7 +26,7 @@ void Vertice<T>::addNeighbor(Vertice<T> *to, int weight) {
 }
 
 template<typename T>
-int Vertice<T>::getWeight(const T &value) {
+int Vertice<T>::getWeight(T &value) {
     for (int i = 0; i < connectedTo.size(); i++) {
         Arista<T>* temp = connectedTo[i];
         if(temp->to->data == value) return connectedTo[i]->weight;

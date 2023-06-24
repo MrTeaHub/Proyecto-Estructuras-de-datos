@@ -36,7 +36,7 @@ public:
     ~Vertice();
 
     void addNeighbor(Vertice<T>* to, int weight = 0);
-    int getWeight(const T& value);
+    int getWeight(T& value);
 
     friend ostream &operator<<(ostream &out, Vertice<T>* vertice){
         out << vertice->data.getNombre() << endl;
