@@ -72,41 +72,32 @@ void almacenarArchivo(string Archivo, Grafo<Almacen> *grafo) {
     archivo.close();
 }
 
-void dijkstra(Vertice<Almacen> *begin, Grafo<Almacen> *grafo)
-{
-    for (int i = 0; i < grafo->count; i++)
-    {
+void dijkstra(Vertice<Almacen>* begin, Grafo<Almacen>* grafo) {
+    for (int i = 0; i < grafo->count; i++) {
         grafo->listaVertices[i]->color = 'w';
         grafo->listaVertices[i]->distance = INT_MAX;
     }
     begin->distance = 0;
     begin->predecesor = 0;
 
-    for (int i = 0; i < grafo->count; i++)
-    {
-        Vertice<Almacen> *curVertice = 0;
+    for (int i = 0; i < grafo->count; i++) {
+        Vertice<Almacen>* curVertice = 0;
         int minDistance = INT_MAX;
 
-        for (int j = 0; j < grafo->count; j++)
-        {
-            if (grafo->listaVertices[j]->color == 'w' && grafo->listaVertices[j]->distance < minDistance)
-            {
+        for (int j = 0; j < grafo->count; j++) {
+            if (grafo->listaVertices[j]->color == 'w' && grafo->listaVertices[j]->distance < minDistance) {
                 curVertice = grafo->listaVertices[j];
                 minDistance = curVertice->distance;
             }
         }
 
-        if (curVertice == 0)
-            break;
+        if (curVertice == 0) break;
         curVertice->color = 'b';
 
-        for (Arista<Almacen> *vecino : curVertice->connectedTo)
-        {
-            if (vecino->to->color == 'w')
-            {
+        for (Arista<Almacen>* vecino : curVertice->connectedTo) {
+            if (vecino->to->color == 'w') {
                 int nuevaDistancia = curVertice->distance + vecino->weight;
-                if (nuevaDistancia < vecino->to->distance)
-                {
+                if (nuevaDistancia < vecino->to->distance) {
                     vecino->to->distance = nuevaDistancia;
                     vecino->to->predecesor = curVertice;
                 }
@@ -115,29 +106,37 @@ void dijkstra(Vertice<Almacen> *begin, Grafo<Almacen> *grafo)
     }
 }
 
-void traversal(Vertice<Almacen>* vertice){
-    stack<string> stack;
-    string ruta = "INICIO->";
+void traversal(Vertice<Almacen>* vertice, vector<string> &rutaMasCorta){
+    stack<string> pila;
+    stack<int> pila2;
     while(vertice->predecesor){
-        stack.push(vertice->data.getNombre());
+        pila.push(vertice->data.getNombre());
         vertice = vertice->predecesor;
     }
-    stack.push(vertice->data.getNombre());
-    while(stack.size() > 0){
-        ruta += stack.top() + "->";
-        stack.pop();
+    pila.push(vertice->data.getNombre());
+    while(pila.size() > 0){
+        rutaMasCorta.push_back(pila.top());
+        pila.pop();
     }
-    cout << ruta << "FIN" << endl << endl;
 }
 
 void dijkstra(vector<vector<string>> posicionVertices, Grafo<Almacen>* grafo){
     Vertice<Almacen>* v,*v1;
+    vector<string> rutaMasCorta;
+    vector<int> posicionVerticesRutaCorta;
+    string ruta = "INICIO->";
     for (int i = 0; i < posicionVertices.size()-1; i++) {
         v = grafo->getVertice(grafo->listaVertices[stoi(posicionVertices[i][0])-1]->data);
         v1 = grafo->getVertice(grafo->listaVertices[stoi(posicionVertices[i+1][0])-1]->data);
         dijkstra(v,grafo);
-        traversal(v1);
+        traversal(v1,rutaMasCorta);
     }
+
+    for (int i = 0; i < rutaMasCorta.size(); i++) if(rutaMasCorta[i] == rutaMasCorta[i+1]) rutaMasCorta.erase(rutaMasCorta.begin()+i, rutaMasCorta.begin()+i+1);
+
+    for (int i = 0; i < rutaMasCorta.size(); i++) ruta += rutaMasCorta[i]+"->";
+    ruta += "FIN";
+    cout << ruta << endl << endl;
 }
 
 void menu(Grafo<Almacen> *grafo){
